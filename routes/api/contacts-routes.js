@@ -6,9 +6,16 @@ const {HttpError} = require("../../helpers")
 const router = express.Router();
 
 const contactAddSchema = Joi.object({
-  name: Joi.string().required(),
-  email: Joi.string().email().required(),
-  phone: Joi.string().required(),
+  name: Joi.string()
+    .required()
+    .messages({ "any.required": `missing required name field` }),
+  email: Joi.string()
+    .email()
+    .required()
+    .messages({ "any.required": `missing required email field` }),
+  phone: Joi.string()
+    .required()
+    .messages({ "any.required": `missing required phone field` }),
 });
 
 router.get('/', async (req, res, next) => {
@@ -55,12 +62,51 @@ router.post('/', async (req, res, next) => {
   }
 })
 
-router.delete('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message remove' })
+
+
+router.put('/:id', async (req, res, next) => {
+  try {
+    if (Object.entries(req.body).length === 0) {
+      res.status(400);
+      res.json({
+        message: "Missing fields",
+      })
+     
+    }
+    const { error } = contactAddSchema.validate(req.body);
+    console.log(req.body);
+    if (error) {
+      throw HttpError(400, error.message);
+    }
+    const { id } = req.params;
+    const result = await contactsService.updateContact(id, req.body);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.json(result)
+  }
+  catch (error) {
+    next(error);
+    
+  }
 })
 
-router.put('/:contactId', async (req, res, next) => {
-  res.json({ message: 'template message' })
-})
+
+router.delete("/:id", async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const result = await contactsService.removeContact(id);
+    if (!result) {
+      throw HttpError(404);
+    }
+    res.json({
+      message: "Contact deleted"
+    })
+    
+  }
+  catch (error) {
+    next(error);
+  }
+});
 
 module.exports = router
