@@ -13,7 +13,7 @@ const getContactById = async (id) => {
   const contact = await listContacts();
   const result = contact.find((item) => item.id === id);
   return result || null;
-}
+};
 
 const removeContact = async (id) => {
   const contacts = await listContacts();
