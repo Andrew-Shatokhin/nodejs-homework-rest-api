@@ -4,6 +4,7 @@ const isValidId = require("./isValidId");
 const isValidStatus = require("./isValidStatus");
 const authenticate = require("./authenticate");
 const upload = require("./upload");
+const validateVerifyBody = require("./validateVerifyBody")
 
 
 
@@ -14,4 +15,5 @@ module.exports = {
   isValidStatus,
   authenticate,
   upload,
+  validateVerifyBody,
 };
